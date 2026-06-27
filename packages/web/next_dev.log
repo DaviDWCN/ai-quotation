@@ -1,0 +1,14 @@
+
+> web@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.4
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 1961ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 8.6s (434 modules)
+ GET /drafts 404 in 8888ms
+ GET /drafts 404 in 35ms
+ GET /drafts 404 in 25ms
