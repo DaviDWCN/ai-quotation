@@ -1,0 +1,22 @@
+name: Trigger Jules Agent
+
+on:
+  repository_dispatch:
+    types: [trigger-jules-worker] # Triggered by the jules-team master orchestrator
+
+jobs:
+  jules_worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Trigger the Jules worker session to run the task
+      - name: Dispatch Task to Jules Worker
+        uses: google-gemini/jules-action@v1
+        with:
+          task-id: ${{ github.event.client_payload.taskId }}
+          spec-file: ${{ github.event.client_payload.specPath }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
