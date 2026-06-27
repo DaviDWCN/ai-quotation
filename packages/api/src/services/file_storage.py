@@ -1,4 +1,4 @@
-from typing import Protocol, BinaryIO
+from typing import Protocol, BinaryIO, cast
 import boto3
 from botocore.exceptions import ClientError
 import asyncio
@@ -30,12 +30,12 @@ class S3StorageAdapter:
             # Handle error appropriately
             raise e
 
+    async def _read_s3_body(self, bucket: str, object_name: str) -> bytes:
+        response = self.s3_client.get_object(Bucket=bucket, Key=object_name)
+        return cast(bytes, response['Body'].read())
+
     async def download_file(self, bucket: str, object_name: str) -> bytes:
         try:
-            response = await asyncio.to_thread(self.s3_client.get_object, Bucket=bucket, Key=object_name)
-            return cast(bytes, response['Body'].read())
+            return await asyncio.to_thread(self._read_s3_body, bucket, object_name)
         except ClientError as e:
             raise e
-
-# Add cast import for mypy in download_file if needed
-from typing import cast

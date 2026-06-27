@@ -45,7 +45,12 @@ class EmailParser:
         else:
             payload = self.message.get_payload(decode=True)
             if isinstance(payload, bytes):
-                body_plain = payload.decode(self.message.get_content_charset() or 'utf-8', errors='replace')
+                content_type = self.message.get_content_type()
+                decoded_body = payload.decode(self.message.get_content_charset() or 'utf-8', errors='replace')
+                if content_type == "text/html":
+                    body_html = decoded_body
+                else:
+                    body_plain = decoded_body
 
         return {
             "message_id": self.get_message_id(),

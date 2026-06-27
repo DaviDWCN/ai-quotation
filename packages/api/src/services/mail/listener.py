@@ -107,11 +107,13 @@ class MailListener:
             message_id_header = parser.get_message_id()
 
             if not message_id_header:
-                logger.warning(f"Message {msg_id} has no Message-ID, skipping.")
+                logger.warning(f"Message {msg_id} has no Message-ID, skipping and marking as read.")
+                await self.mail_adapter.mark_as_read(msg_id)
                 continue
 
             if message_id_header in self.processed_message_ids:
-                logger.info(f"Skipping duplicate message: {message_id_header}")
+                logger.info(f"Skipping duplicate message: {message_id_header}, marking as read.")
+                await self.mail_adapter.mark_as_read(msg_id)
                 continue
 
             try:
