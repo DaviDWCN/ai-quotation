@@ -18,16 +18,15 @@ jobs:
         with:
           node-version: 20
 
-      # Configure git to use HTTPS instead of SSH for GitHub
-      - name: Configure Git
-        run: |
-          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
-          git config --global url."https://github.com/".insteadOf git@github.com:
-
-      # Fetch the latest jules-team CLI to perform the audit
+      # Use a more robust way to install the jules-team CLI that avoids SSH/Git auth issues
       - name: Install jules-team CLI
         run: |
-          npm install -g git+https://github.com/DaviDWCN/jules-team.git
+          mkdir -p jules-team-cli
+          # Try to download as tarball from main or master branch
+          curl -L https://github.com/DaviDWCN/jules-team/tarball/main -o jules-team.tar.gz || \
+          curl -L https://github.com/DaviDWCN/jules-team/tarball/master -o jules-team.tar.gz
+          tar -xzf jules-team.tar.gz -C jules-team-cli --strip-components=1
+          cd jules-team-cli && npm install && npm link
 
       - name: Get PR Diff
         run: |
@@ -40,5 +39,4 @@ jobs:
           LLM_MODEL: "gemini-3.5-flash"
         run: |
           # Audit the PR diff against the spec and coding conventions
-          # We use TASK-001 as the entry point for review as per original workflow
           jules-team review openspec/tasks.md TASK-001 --diff pr_changes.diff
