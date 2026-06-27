@@ -42,5 +42,9 @@ async def seed_master_data(json_path: str):
 
 if __name__ == "__main__":
     import os
-    fixture_path = os.path.join(os.path.dirname(__file__), "../../tests/fixtures/mock_master_data.json")
+    # Adjusted path to work when run from packages/api
+    fixture_path = os.path.join(os.path.dirname(__file__), "..", "..", "tests", "fixtures", "mock_master_data.json")
+    if not os.path.exists(fixture_path):
+        # Fallback for other execution contexts (e.g. root)
+        fixture_path = "packages/api/tests/fixtures/mock_master_data.json"
     asyncio.run(seed_master_data(fixture_path))
