@@ -21,7 +21,7 @@ jobs:
       # Fetch the latest jules-team CLI to perform the audit
       - name: Install jules-team CLI
         run: |
-          npm install -g https://github.com/DaviDWCN/jules-team/tarball/main
+          npm install -g https://github.com/DaviDWCN/jules-team.git
 
       - name: Get PR Diff
         run: |
@@ -34,4 +34,4 @@ jobs:
           LLM_MODEL: "gemini-3.5-flash"
         run: |
           # Audit the PR diff against the spec and coding conventions
-          jules-team review openspec/tasks.md TASK-001 --diff pr_changes.diff
+          jules-team review openspec/tasks.md TASK-003 --diff pr_changes.diff

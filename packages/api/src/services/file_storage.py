@@ -30,7 +30,7 @@ class S3StorageAdapter:
             # Handle error appropriately
             raise e
 
-    async def _read_s3_body(self, bucket: str, object_name: str) -> bytes:
+    def _read_s3_body(self, bucket: str, object_name: str) -> bytes:
         response = self.s3_client.get_object(Bucket=bucket, Key=object_name)
         return cast(bytes, response['Body'].read())
 
