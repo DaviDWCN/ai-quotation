@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Set
 from .adapter import MailAdapter, MailMessage
 from src.services.file_storage import FileStorageAdapter
-from packages.shared.mq.adapter import MQAdapter
+from mq.adapter import MQAdapter
 from src.config import settings
 
 logger = logging.getLogger(__name__)
@@ -60,8 +60,10 @@ class MailListener:
     async def process_message(self, msg: MailMessage) -> None:
         attachment_urls = []
         for attachment in msg.attachments:
-            # Check for size limits if necessary (AC-8)
-            # For now, just upload
+            # Check for size limits (AC-8)
+            if len(attachment.content) > settings.mail_max_attachment_size:
+                raise ValueError(f"Attachment {attachment.filename} exceeds size limit of {settings.mail_max_attachment_size} bytes")
+
             file_obj = io.BytesIO(attachment.content)
             url = await self.storage_adapter.upload_file(
                 file_obj,

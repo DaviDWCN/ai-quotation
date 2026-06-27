@@ -27,6 +27,7 @@ class Settings(BaseSettings):
 
     # Mail Listener Settings
     mail_poll_interval: int = 30  # seconds
+    mail_max_attachment_size: int = 10 * 1024 * 1024  # 10MB
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
