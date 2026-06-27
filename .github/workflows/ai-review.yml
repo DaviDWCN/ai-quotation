@@ -21,7 +21,7 @@ jobs:
       # Fetch the latest jules-team CLI to perform the audit
       - name: Install jules-team CLI
         run: |
-          npm install -g DaviDWCN/jules-team
+          npm install -g git+https://github.com/DaviDWCN/jules-team.git
 
       - name: Get PR Diff
         run: |
