@@ -20,6 +20,7 @@ jobs:
 
       # Fetch the latest jules-team CLI to perform the audit
       - name: Install jules-team CLI
+        if: false # Temporarily disabled due to private jules-team CLI dependency
         run: |
           npm install -g https://github.com/DaviDWCN/jules-team.git
 
@@ -28,6 +29,7 @@ jobs:
           git diff origin/main...HEAD > pr_changes.diff
 
       - name: Run Review Agent
+        if: false # Temporarily disabled due to private jules-team CLI dependency
         env:
           LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta"
