@@ -1,0 +1,36 @@
+{
+  "customers": [
+    {"id": "C001", "name": "TechCorp Solutions", "code": "TECH001", "contact": "Alice Chen", "email": "alice@techcorp.com"},
+    {"id": "C002", "name": "Global Industries Ltd", "code": "GLOB002", "contact": "Bob Smith", "email": "bob@globalind.com"},
+    {"id": "C003", "name": "Sino Trade Group", "code": "SINO003", "contact": "Zhang Wei", "email": "zhang@sinotrade.com"},
+    {"id": "C004", "name": "Future Energy Corp", "code": "FUT004", "contact": "John Doe", "email": "john@future.com"},
+    {"id": "C005", "name": "Pacific Logistics", "code": "PAC005", "contact": "Mary Liu", "email": "mary@pacific.com"},
+    {"id": "C006", "name": "Apex Engineering", "code": "APEX006", "contact": "James Lee", "email": "james@apex.com"},
+    {"id": "C007", "name": "Mega Retailers", "code": "MEGA007", "contact": "Sarah Wong", "email": "sarah@mega.com"},
+    {"id": "C008", "name": "Dynamic Systems", "code": "DYN008", "contact": "David Brown", "email": "david@dynamic.com"},
+    {"id": "C009", "name": "Eco Friendly Ltd", "code": "ECO009", "contact": "Emma Green", "email": "emma@eco.com"},
+    {"id": "C010", "name": "Zenith Manufacturing", "code": "ZEN010", "contact": "Leo Park", "email": "leo@zenith.com"}
+  ],
+  "materials": [
+    {"id": "M001", "name": "Steel Plate 10mm", "code": "SP-010", "specification": "10mm thick", "unit": "PCS", "unit_price": 150.0},
+    {"id": "M002", "name": "Aluminum Rod 50mm", "code": "AR-050", "specification": "50mm length", "unit": "PCS", "unit_price": 45.0},
+    {"id": "M003", "name": "Copper Wire 1.5mm", "code": "CW-1.5", "specification": "1.5mm diameter", "unit": "METER", "unit_price": 2.5},
+    {"id": "M004", "name": "Hydraulic Oil ISO 46", "code": "HO-046", "specification": "20L drum", "unit": "DRUM", "unit_price": 85.0},
+    {"id": "M005", "name": "Ball Bearing 6204", "code": "BB-6204", "specification": "20x47x14mm", "unit": "PCS", "unit_price": 12.0},
+    {"id": "M006", "name": "Pneumatic Valve 1/4", "code": "PV-025", "specification": "3/2 way", "unit": "PCS", "unit_price": 38.0},
+    {"id": "M007", "name": "Rubber Gasket M20", "code": "RG-M20", "specification": "NBR material", "unit": "PCS", "unit_price": 0.5},
+    {"id": "M008", "name": "Welding Electrode E6013", "code": "WE-6013", "specification": "3.2mm", "unit": "KG", "unit_price": 8.0},
+    {"id": "M009", "name": "Safety Glasses Clear", "code": "SG-CLR", "specification": "Anti-fog", "unit": "PCS", "unit_price": 5.0},
+    {"id": "M010", "name": "Work Gloves Leather", "code": "WG-LTH", "specification": "Large size", "unit": "PAIR", "unit_price": 4.2},
+    {"id": "M011", "name": "Stainless Steel Bolt M10", "code": "SB-M10", "specification": "M10x50", "unit": "PCS", "unit_price": 1.2},
+    {"id": "M012", "name": "Nylon Cable Tie 300mm", "code": "NT-300", "specification": "Pack of 100", "unit": "PACK", "unit_price": 3.5},
+    {"id": "M013", "name": "Industrial Fan 24V", "code": "IF-024", "specification": "120mm", "unit": "PCS", "unit_price": 28.0},
+    {"id": "M014", "name": "PLC Controller S7-1200", "code": "PLC-S12", "specification": "CPU 1214C", "unit": "PCS", "unit_price": 450.0},
+    {"id": "M015", "name": "HMI Panel 7 inch", "code": "HMI-007", "specification": "Touch screen", "unit": "PCS", "unit_price": 320.0},
+    {"id": "M016", "name": "Variable Frequency Drive 1kW", "code": "VFD-01K", "specification": "Single phase", "unit": "PCS", "unit_price": 180.0},
+    {"id": "M017", "name": "Proximity Sensor M18", "code": "PS-M18", "specification": "Inductive PNP", "unit": "PCS", "unit_price": 15.0},
+    {"id": "M018", "name": "Electric Motor 2.2kW", "code": "EM-2.2K", "specification": "3-phase 4-pole", "unit": "PCS", "unit_price": 240.0},
+    {"id": "M019", "name": "Chain Sprocket 08B-15T", "code": "CS-08B15", "specification": "Simplex", "unit": "PCS", "unit_price": 9.5},
+    {"id": "M020", "name": "Conveyor Belt 500mm", "code": "CB-500", "specification": "PVC 2-ply", "unit": "METER", "unit_price": 35.0}
+  ]
+}
