@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 12px 16px;
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header button {
+  background: none;
+  color: var(--primary-color);
+  padding: 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.preview {
+  height: 250px;
+  background: #eee;
+}
+
+.form {
+  padding: 16px;
+}
+
+.loading, .error {
+  padding: 40px;
+  text-align: center;
+}

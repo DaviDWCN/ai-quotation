@@ -1,0 +1,21 @@
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+
+.high {
+  background-color: var(--confidence-high);
+}
+
+.medium {
+  background-color: var(--confidence-medium);
+}
+
+.low {
+  background-color: var(--confidence-low);
+}

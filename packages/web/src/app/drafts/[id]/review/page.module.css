@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  gap: 20px;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 16px;
+  padding: 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 18px;
+}

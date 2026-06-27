@@ -1,0 +1,81 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.section input {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.itemsSection {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldGroup label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.fieldGroup input {
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.low input {
+  border-color: var(--confidence-low);
+  background-color: #fff8f8;
+}
+
+.medium input {
+  border-color: var(--confidence-medium);
+}
+
+.errorInput input {
+  border-color: var(--danger-color);
+  background-color: #fff3f3;
+}
+
+.metaSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
