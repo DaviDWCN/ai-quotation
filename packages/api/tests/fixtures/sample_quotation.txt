@@ -1,0 +1,6 @@
+# This is a mock PDF content for testing
+Customer Name: Mock Customer
+Material Code: MOCK-001
+Quantity: 10
+Unit: pcs
+Target Price: 100

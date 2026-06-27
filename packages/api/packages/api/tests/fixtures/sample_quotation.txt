@@ -1,0 +1,5 @@
+Mock Customer
+MOCK-001
+10
+pcs
+100
