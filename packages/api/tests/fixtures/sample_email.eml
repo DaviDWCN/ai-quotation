@@ -1,0 +1,18 @@
+From: sender@example.com
+To: inquiry@company.com
+Subject: Quote request for parts
+Message-ID: <test-123@example.com>
+Content-Type: multipart/mixed; boundary="boundary-123"
+
+--boundary-123
+Content-Type: text/plain; charset="utf-8"
+
+Please provide a quote for the following parts.
+
+--boundary-123
+Content-Type: text/plain; name="request.txt"
+Content-Disposition: attachment; filename="request.txt"
+
+Part A: 10 units
+Part B: 5 units
+--boundary-123--
