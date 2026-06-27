@@ -18,7 +18,7 @@ def test_verify_url():
     # Verification should be plain text, not JSON
     assert response.text == "hello"
 
-@patch("shared.mq.rabbitmq.RabbitMQAdapter.publish", new_callable=AsyncMock)
+@patch("shared.mq.RabbitMQAdapter.publish", new_callable=AsyncMock)
 def test_handle_text_callback(mock_publish):
     xml_data = """<xml>
         <ToUserName><![CDATA[toUser]]></ToUserName>
@@ -43,7 +43,7 @@ def test_handle_text_callback(mock_publish):
     assert args[1]["msg_type"] == "text"
     assert args[1]["content"] == "this is a test"
 
-@patch("shared.mq.rabbitmq.RabbitMQAdapter.publish", new_callable=AsyncMock)
+@patch("shared.mq.RabbitMQAdapter.publish", new_callable=AsyncMock)
 @patch("src.services.wecom.mock_wecom.MockWeComAdapter.download_media", new_callable=AsyncMock)
 def test_handle_file_callback(mock_download, mock_publish):
     mock_download.return_value = b"test content"
@@ -80,7 +80,7 @@ def test_handle_file_callback(mock_download, mock_publish):
     if os.path.exists(file_path):
         os.remove(file_path)
 
-@patch("shared.mq.rabbitmq.RabbitMQAdapter.publish", new_callable=AsyncMock)
+@patch("shared.mq.RabbitMQAdapter.publish", new_callable=AsyncMock)
 @patch("src.services.wecom.mock_wecom.MockWeComAdapter.download_media", new_callable=AsyncMock)
 def test_handle_file_callback_path_traversal(mock_download, mock_publish):
     mock_download.return_value = b"test content"

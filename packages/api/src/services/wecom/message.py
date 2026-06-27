@@ -2,7 +2,7 @@ import os
 import logging
 from typing import Dict, Any
 from .adapter import WeComAdapter
-from shared.mq.adapter import MQAdapter
+from shared.mq import MQAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class WeComMessageHandler:
 # Factory for the handler to be used as a dependency
 def get_message_handler() -> WeComMessageHandler:
     from .mock_wecom import MockWeComAdapter
-    from shared.mq.rabbitmq import RabbitMQAdapter
+    from shared.mq import RabbitMQAdapter
     return WeComMessageHandler(
         MockWeComAdapter(),
         RabbitMQAdapter("mock://localhost")
