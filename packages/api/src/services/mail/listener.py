@@ -84,13 +84,23 @@ class MailListener:
 
     async def start(self) -> None:
         self.running = True
-        await self.mail_adapter.connect()
         while self.running:
             try:
-                await self.poll()
+                await self.mail_adapter.connect()
+                while self.running:
+                    try:
+                        await self.poll()
+                    except (imaplib.IMAP4.error, ConnectionError, OSError) as e:
+                        logger.error(f"IMAP connection lost: {e}. Attempting to reconnect...")
+                        break # Break inner loop to reconnect
+                    except Exception as e:
+                        logger.error(f"Unexpected error during poll: {e}")
+                    await asyncio.sleep(self.poll_interval)
             except Exception as e:
-                logger.error(f"Error during poll: {e}")
-            await asyncio.sleep(self.poll_interval)
+                logger.error(f"Failed to connect to mail server: {e}. Retrying in {self.poll_interval}s...")
+                await asyncio.sleep(self.poll_interval)
+            finally:
+                await self.mail_adapter.disconnect()
 
     async def stop(self) -> None:
         self.running = False
@@ -155,3 +165,5 @@ class MailListener:
                     "error": str(e)
                 }
                 await self.mq_adapter.publish("quotation.dead_letter", error_payload)
+                # Mark failed message as read to avoid infinite retry loop in poll
+                await self.mail_adapter.mark_as_read(msg_id)
