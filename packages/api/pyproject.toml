@@ -12,6 +12,7 @@ dependencies = [
     "uvicorn>=0.30.1",
     "pydantic>=2.7.4",
     "pydantic-settings>=2.3.4",
+    "xmltodict>=0.13.0",
 ]
 
 [project.optional-dependencies]
