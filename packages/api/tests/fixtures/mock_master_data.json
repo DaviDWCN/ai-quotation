@@ -1,0 +1,36 @@
+{
+  "customers": [
+    {"id": "C001", "name": "Global Tech Solutions", "code": "GTS001"},
+    {"id": "C002", "name": "Precision Engineering Ltd", "code": "PEL002"},
+    {"id": "C003", "name": "Future Dynamics Corp", "code": "FDC003"},
+    {"id": "C004", "name": "Alpha Manufacturing", "code": "AM004"},
+    {"id": "C005", "name": "Blue Horizon Logistics", "code": "BHL005"},
+    {"id": "C006", "name": "Summit Peak Enterprises", "code": "SPE006"},
+    {"id": "C007", "name": "Nova Systems Inc", "code": "NSI007"},
+    {"id": "C008", "name": "Vertex Industry", "code": "VI008"},
+    {"id": "C009", "name": "Zenith Global", "code": "ZG009"},
+    {"id": "C010", "name": "Apex Innovations", "code": "AI010"}
+  ],
+  "materials": [
+    {"id": "M001", "name": "Stainless Steel Bolt M8", "code": "SSB-M8", "unit_price": 0.5},
+    {"id": "M002", "name": "Stainless Steel Bolt M10", "code": "SSB-M10", "unit_price": 0.75},
+    {"id": "M003", "name": "Aluminum Plate 5mm", "code": "AP-5", "unit_price": 15.0},
+    {"id": "M004", "name": "Aluminum Plate 10mm", "code": "AP-10", "unit_price": 25.0},
+    {"id": "M005", "name": "Copper Wire 2mm", "code": "CW-2", "unit_price": 2.0},
+    {"id": "M006", "name": "Copper Wire 5mm", "code": "CW-5", "unit_price": 4.5},
+    {"id": "M007", "name": "High Tension Spring", "code": "HTS-01", "unit_price": 1.2},
+    {"id": "M008", "name": "Nylon Washer 10mm", "code": "NW-10", "unit_price": 0.05},
+    {"id": "M009", "name": "Titanium Rod 20mm", "code": "TR-20", "unit_price": 120.0},
+    {"id": "M010", "name": "Carbon Fiber Sheet 2x2", "code": "CFS-22", "unit_price": 85.0},
+    {"id": "M011", "name": "Steel Gasket G12", "code": "SG-12", "unit_price": 0.3},
+    {"id": "M012", "name": "Rubber Seal R05", "code": "RS-05", "unit_price": 0.15},
+    {"id": "M013", "name": "Brass Fitting B08", "code": "BF-08", "unit_price": 3.2},
+    {"id": "M014", "name": "Polycarbonate Panel", "code": "PP-01", "unit_price": 45.0},
+    {"id": "M015", "name": "Ceramic Insulator", "code": "CI-101", "unit_price": 8.0},
+    {"id": "M016", "name": "Galvanized Pipe 2in", "code": "GP-2", "unit_price": 12.5},
+    {"id": "M017", "name": "Hydraulic Fluid 1L", "code": "HF-01", "unit_price": 18.0},
+    {"id": "M018", "name": "Industrial Lubricant", "code": "IL-500", "unit_price": 10.0},
+    {"id": "M019", "name": "Silicon Sealant", "code": "SS-400", "unit_price": 5.5},
+    {"id": "M020", "name": "Heat Resistant Tape", "code": "HRT-05", "unit_price": 2.8}
+  ]
+}
