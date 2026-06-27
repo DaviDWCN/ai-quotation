@@ -1,0 +1,18 @@
+From: sender@example.com
+To: recipient@example.com
+Subject: Test Quotation Email
+Message-ID: <test-123@example.com>
+Content-Type: multipart/mixed; boundary="boundary-123"
+
+--boundary-123
+Content-Type: text/plain; charset=utf-8
+
+Hello, please see the attached quotation.
+
+--boundary-123
+Content-Type: application/pdf; name="quotation.pdf"
+Content-Disposition: attachment; filename="quotation.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJ... (fake pdf content)
+--boundary-123--
