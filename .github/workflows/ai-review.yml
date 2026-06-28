@@ -45,10 +45,18 @@ jobs:
           LLM_MODEL: "gemini-flash-latest"
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          # Extract TASK_ID from PR title (e.g., [TASK-008] -> TASK-008)
+          # Extract TASK_ID from PR title or branch name (e.g., [TASK-008] or fix/TASK-008-bug)
+          echo "PR Title: $PR_TITLE"
+          echo "Branch Name: $GITHUB_HEAD_REF"
+
           TASK_ID=$(echo "$PR_TITLE" | grep -oE 'TASK-[0-9]+' | head -n 1)
           if [ -z "$TASK_ID" ]; then
-            echo "Error: Could not extract TASK_ID from PR title: $PR_TITLE"
+            echo "TASK_ID not found in PR title, checking branch name..."
+            TASK_ID=$(echo "$GITHUB_HEAD_REF" | grep -oE 'TASK-[0-9]+' | head -n 1)
+          fi
+
+          if [ -z "$TASK_ID" ]; then
+            echo "Error: Could not extract TASK_ID from PR title ($PR_TITLE) or branch name ($GITHUB_HEAD_REF)"
             exit 1
           fi
           echo "Detected Task ID: $TASK_ID"
