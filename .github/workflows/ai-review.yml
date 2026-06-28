@@ -42,7 +42,7 @@ jobs:
         env:
           LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta"
-          LLM_MODEL: "gemini-3.5-flash"
+          LLM_MODEL: "gemini-1.5-flash"
         run: |
           # Audit the PR diff against the spec and coding conventions
           TASK_ID=$(echo "${{ github.event.pull_request.title }}" | grep -o 'TASK-[0-9]\+')
