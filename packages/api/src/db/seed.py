@@ -4,7 +4,7 @@ from src.db.session import async_session_factory
 from src.db.models import CustomerModel, MaterialModel
 from sqlalchemy import select
 
-async def seed_master_data(json_path: str):
+async def seed_master_data(json_path: str) -> None:
     """Seed the database with mock master data."""
     with open(json_path, 'r') as f:
         data = json.load(f)

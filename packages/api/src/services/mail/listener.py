@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Set
 from .adapter import MailAdapter, MailMessage
 from src.services.file_storage import FileStorageAdapter
-from mq.adapter import MQAdapter
+from packages.shared.mq.adapter import MQAdapter
 from src.config import settings
 
 logger = logging.getLogger(__name__)
