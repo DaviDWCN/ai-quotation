@@ -57,6 +57,24 @@ sprint: "2026-W27"
   - spec: specs/TASK-007.md
   - pr: https://github.com/DaviDWCN/ai-quotation/pull/27
 
+- [ ] `TASK-008`: 修复配置项缺失与环境依赖问题
+  - assignee: unassigned
+  - priority: critical
+  - depends_on: []
+  - spec: specs/TASK-008.md
+
+- [ ] `TASK-009`: 统一 QuotationDraft 模型与修复 AI 解析数据流
+  - assignee: unassigned
+  - priority: critical
+  - depends_on: [TASK-008]
+  - spec: specs/TASK-009.md
+
+- [ ] `TASK-010`: 修复前后端草稿模型不匹配与注册集成网关路由
+  - assignee: unassigned
+  - priority: high
+  - depends_on: [TASK-009]
+  - spec: specs/TASK-010.md
+
 ## In Progress
 
 <!-- Tasks are moved here automatically by the Master Orchestrator when dispatched -->
