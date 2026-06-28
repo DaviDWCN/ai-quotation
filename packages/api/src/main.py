@@ -13,5 +13,5 @@ class HealthResponse(BaseModel):
     status: str
 
 @app.get("/healthz", response_model=HealthResponse)
-async def healthz():
+async def healthz() -> HealthResponse:
     return HealthResponse(status="ok")
