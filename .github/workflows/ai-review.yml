@@ -44,5 +44,8 @@ jobs:
           LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta"
           LLM_MODEL: "gemini-3.5-flash"
         run: |
+          # Dynamically extract TASK_ID from branch name or PR title
+          TASK_ID=$(echo "${{ github.head_ref }}${{ github.event.pull_request.title }}" | grep -oE "TASK-[0-9]+" | head -n 1 || echo "TASK-001")
+          echo "Detected TASK_ID: $TASK_ID"
           # Audit the PR diff against the spec and coding conventions
-          jules-team review openspec/tasks.md TASK-001 --diff pr_changes.diff
+          jules-team review openspec/tasks.md $TASK_ID --diff pr_changes.diff
