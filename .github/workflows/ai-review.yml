@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       # Checkout the private jules-team repository to build the CLI
       - name: Checkout Jules Team CLI
@@ -42,7 +42,16 @@ jobs:
         env:
           LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta"
-          LLM_MODEL: "gemini-3.5-flash"
+          LLM_MODEL: "gemini-flash-latest"
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
+          # Extract TASK_ID from PR title (e.g., [TASK-008] -> TASK-008)
+          TASK_ID=$(echo "$PR_TITLE" | grep -oE 'TASK-[0-9]+' | head -n 1)
+          if [ -z "$TASK_ID" ]; then
+            echo "Error: Could not extract TASK_ID from PR title: $PR_TITLE"
+            exit 1
+          fi
+          echo "Detected Task ID: $TASK_ID"
+
           # Audit the PR diff against the spec and coding conventions
-          jules-team review openspec/tasks.md TASK-001 --diff pr_changes.diff
+          jules-team review openspec/tasks.md "$TASK_ID" --diff pr_changes.diff
