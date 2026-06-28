@@ -74,7 +74,7 @@ class QuotationConsumer:
             # In a real system, we might move this to a dead letter queue
             raise
 
-async def start_consumer(rabbitmq_url: str, matching_engine: MatchingEngine, notification_service: WeComNotificationService):
+async def start_consumer(rabbitmq_url: str, matching_engine: MatchingEngine, notification_service: WeComNotificationService) -> None:
     """Start the MQ consumer and listen for messages."""
     consumer = QuotationConsumer(matching_engine, notification_service)
 

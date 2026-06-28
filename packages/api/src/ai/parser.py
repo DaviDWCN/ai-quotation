@@ -75,7 +75,7 @@ async def parse_quotation_request(
 
             data = json.loads(content)
             result = ExtractedQuotation.model_validate(data)
-            return cast(ExtractedQuotation, result)
+            return result
 
         except (ValidationError, json.JSONDecodeError, ValueError) as e:
             logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
