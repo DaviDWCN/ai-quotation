@@ -12,6 +12,27 @@ class Settings(BaseSettings):
     # Database Configuration (TASK-005)
     database_url: str = "sqlite+aiosqlite:///./test.db"
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    # Mail Configuration
+    mail_poll_interval: int = 30
+    mail_max_attachment_size: int = 10485760  # 10MB
+    imap_host: str = "localhost"
+    imap_port: int = 993
+    imap_user: str = ""
+    imap_password: str = ""
+    imap_use_ssl: bool = True
+    imap_mailbox: str = "INBOX"
+
+    # Message Queue Topics
+    mq_dead_letter_topic: str = "quotation.dead_letter"
+    mq_quotation_parse_topic: str = "quotation.parse"
+
+    # S3 Storage Configuration
+    s3_endpoint: str = "http://localhost:9000"
+    s3_access_key: str = ""
+    s3_secret_key: str = ""
+    s3_region: str = "us-east-1"
+    s3_bucket: str = "quotations"
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra='ignore')
 
 settings = Settings()

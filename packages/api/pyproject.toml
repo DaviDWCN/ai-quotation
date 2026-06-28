@@ -18,6 +18,14 @@ dependencies = [
     "aiosqlite>=0.20.0",
     "rapidfuzz>=3.9.3",
     "aio-pika>=9.4.2",
+    "xmltodict>=0.13.0",
+    "pypdf>=4.2.0",
+    "openpyxl>=3.1.2",
+    "python-docx>=1.1.0",
+    "boto3>=1.34.0",
+    "structlog>=24.2.0",
+    "litellm>=1.40.0",
+    "pandas>=2.2.0",
 ]
 
 [project.optional-dependencies]
@@ -27,6 +35,10 @@ dev = [
     "pytest-cov>=5.0.0",
     "mypy>=1.10.0",
     "httpx>=0.27.0",
+    "types-openpyxl",
+    "types-xmltodict",
+    "pandas-stubs",
+    "boto3-stubs[s3]",
 ]
 
 [tool.hatch.build.targets.wheel]

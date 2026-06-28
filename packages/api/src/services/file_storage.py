@@ -58,4 +58,4 @@ class S3StorageAdapter:
             Bucket=self.bucket,
             Key=filename
         )
-        return await asyncio.to_thread(response["Body"].read) # type: ignore
+        return await asyncio.to_thread(response["Body"].read)

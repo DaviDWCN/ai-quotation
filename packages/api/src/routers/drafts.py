@@ -28,7 +28,7 @@ async def list_drafts(
     limit: int = Query(100, ge=1),
     offset: int = Query(0, ge=0),
     session: AsyncSession = Depends(get_session)
-):
+) -> List[Dict[str, Any]]:
     service = DraftService(session)
     drafts = await service.list_drafts(limit=limit, offset=offset)
     return [
@@ -44,7 +44,7 @@ async def list_drafts(
     ]
 
 @router.get("/{draft_id}", response_model=DraftDetail)
-async def get_draft(draft_id: str, session: AsyncSession = Depends(get_session)):
+async def get_draft(draft_id: str, session: AsyncSession = Depends(get_session)) -> Any:
     service = DraftService(session)
     draft = await service.get_draft(draft_id)
     if not draft:
@@ -56,7 +56,7 @@ async def update_draft(
     draft_id: str,
     update_data: Dict[str, Any],
     session: AsyncSession = Depends(get_session)
-):
+) -> Any:
     service = DraftService(session)
     updated = await service.update_draft(draft_id, update_data)
     if not updated:

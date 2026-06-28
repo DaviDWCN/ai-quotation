@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Bounded cache for idempotency to avoid memory leak
 MAX_PROCESSED_MESSAGES = 1000
-processed_messages = deque(maxlen=MAX_PROCESSED_MESSAGES)
+processed_messages: deque[str] = deque(maxlen=MAX_PROCESSED_MESSAGES)
 
 # Initialize Adapters
 wecom_adapter = MockWeComAdapter()
@@ -67,9 +67,9 @@ async def wecom_callback(
 
     # Convert Pydantic models to dict for MQ serialization
     mq_payload = processed_data.copy()
-    data = mq_payload.get("data")
-    if isinstance(data, (WeComTextMessage, WeComImageMessage, WeComFileMessage)):
-        mq_payload["data"] = data.model_dump()
+    message_data = mq_payload.get("data")
+    if isinstance(message_data, (WeComTextMessage, WeComImageMessage, WeComFileMessage)):
+        mq_payload["data"] = message_data.model_dump()  # type: ignore[assignment]
 
     # Publish to MQ
     try:
