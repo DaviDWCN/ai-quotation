@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from src.ai.schemas import ExtractedQuotation
 from src.ai.prompts import QUOTATION_EXTRACTION_SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
 from src.ai.document_extractor import extract_documents_text
+from src.ai.confidence import ConfidenceLevel
 
 # Use a workaround for the 'types' name conflict with standard library
 import sys
@@ -30,10 +31,12 @@ try:
     shared_models = load_shared_quotation_types()
     # We use Any for these because they are dynamically loaded and mypy can't track them well
     QuotationDraft: Any = shared_models.QuotationDraft
-    QuotationItem: Any = shared_models.QuotationItem
+    ParsedQuotation: Any = shared_models.ParsedQuotation
+    ParsedMaterial: Any = shared_models.ParsedMaterial
 except (ImportError, AttributeError):
     QuotationDraft = None
-    QuotationItem = None
+    ParsedQuotation = None
+    ParsedMaterial = None
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +78,7 @@ async def parse_quotation_request(
 
             data = json.loads(content)
             result = ExtractedQuotation.model_validate(data)
-            return cast(ExtractedQuotation, result)
+            return result
 
         except (ValidationError, json.JSONDecodeError, ValueError) as e:
             logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
@@ -94,24 +97,39 @@ def convert_to_quotation_draft(extracted: ExtractedQuotation, draft_id: str) -> 
     Converts ExtractedQuotation to the shared QuotationDraft model.
     Internal IDs (customer_id, material_ids) are not populated here.
     """
-    if QuotationItem is None or QuotationDraft is None:
+    if QuotationDraft is None or ParsedQuotation is None or ParsedMaterial is None:
         raise ImportError("Shared quotation models are not available")
 
-    items = []
+    parsed_items = []
     for item in extracted.items:
-        items.append(QuotationItem(
-            material_code=item.material_code.value,
+        # Map ExtractedItem to ParsedMaterial
+        parsed_items.append(ParsedMaterial(
+            code=item.material_code.value,
             quantity=item.quantity.value,
-            target_price=item.target_price.value,
             unit=item.unit.value,
-            remarks=item.remarks.value
+            # Simple heuristic for confidence score
+            confidence=0.9 if item.material_code.confidence == ConfidenceLevel.HIGH else 0.6
         ))
 
+    # Wrap into ParsedQuotation
+    parsed_data = ParsedQuotation(
+        customer_name=extracted.customer_name.value,
+        date=extracted.delivery_date.value,
+        items=parsed_items,
+        metadata={
+            "segmentation": extracted.segmentation.value,
+            "remarks": extracted.remarks.value,
+            "item_details": [
+                {
+                    "target_price": i.target_price.value,
+                    "remarks": i.remarks.value
+                } for i in extracted.items
+            ]
+        }
+    )
+
+    # Return QuotationDraft with nested parsed_data
     return QuotationDraft(
         id=draft_id,
-        customer_name=extracted.customer_name.value,
-        segmentation=extracted.segmentation.value,
-        items=items,
-        delivery_date=extracted.delivery_date.value,
-        remarks=extracted.remarks.value
+        parsed_data=parsed_data
     )
