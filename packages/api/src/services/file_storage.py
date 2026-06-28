@@ -10,6 +10,12 @@ class FileStorageAdapter(Protocol):
         """
         ...
 
+    async def download_file(self, file_url: str) -> bytes:
+        """
+        Downloads a file from the given URL and returns its content as bytes.
+        """
+        ...
+
 class S3StorageAdapter:
     def __init__(self) -> None:
         self.s3_client = boto3.client(
@@ -37,3 +43,19 @@ class S3StorageAdapter:
             ExtraArgs=extra_args
         )
         return f"s3://{self.bucket}/{filename}"
+
+    async def download_file(self, file_url: str) -> bytes:
+        import asyncio
+        # Expecting format s3://bucket/filename
+        if not file_url.startswith(f"s3://{self.bucket}/"):
+            raise ValueError(f"Invalid S3 URL: {file_url}")
+
+        filename = file_url.replace(f"s3://{self.bucket}/", "")
+
+        # boto3 is blocking
+        response = await asyncio.to_thread(
+            self.s3_client.get_object,
+            Bucket=self.bucket,
+            Key=filename
+        )
+        return await asyncio.to_thread(response["Body"].read) # type: ignore
