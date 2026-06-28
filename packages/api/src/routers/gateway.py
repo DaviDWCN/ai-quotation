@@ -7,7 +7,7 @@ from src.services.gateway import (
     GatewayQuotationCreate,
 )
 
-router = APIRouter(prefix="/api/gateway", tags=["gateway"])
+router = APIRouter()
 
 # Simple dependency injection for the mock client
 # In production, this would be configured via settings

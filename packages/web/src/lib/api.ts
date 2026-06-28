@@ -9,10 +9,15 @@ export interface DraftField {
 
 export interface Draft {
   id: string;
+  customer_id?: string;
+  customer_match_score: number;
   status: string;
+  needs_confirmation: boolean;
   fields: Record<string, DraftField>;
-  file_url: string;
-  file_type: string;
+  parsed_data: any;
+  material_matches: any[];
+  file_url?: string;
+  file_type?: string;
   created_at: string;
   updated_at: string;
 }

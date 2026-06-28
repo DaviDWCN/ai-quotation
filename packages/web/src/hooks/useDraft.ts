@@ -33,7 +33,7 @@ export function useDraft(id: string) {
     try {
       const updated = await updateDraft(id, {
         fields: draft.fields,
-        status: status || draft.status
+        status: status || (draft.status as any)
       });
       setDraft(updated);
       return updated;
