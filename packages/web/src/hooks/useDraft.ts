@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Draft, fetchDraftById, updateDraft } from '@/lib/api';
+import { Draft, DraftStatus, fetchDraftById, updateDraft } from '@/lib/api';
 
 export function useDraft(id: string) {
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -27,13 +27,13 @@ export function useDraft(id: string) {
     });
   };
 
-  const saveDraft = async (status?: string) => {
+  const saveDraft = async (status?: DraftStatus) => {
     if (!draft) return;
     setSaving(true);
     try {
       const updated = await updateDraft(id, {
         fields: draft.fields,
-        status: status || (draft.status as any)
+        status: status || draft.status
       });
       setDraft(updated);
       return updated;
