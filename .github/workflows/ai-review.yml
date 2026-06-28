@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       # Checkout the private jules-team repository to build the CLI
       - name: Checkout Jules Team CLI
@@ -45,4 +45,9 @@ jobs:
           LLM_MODEL: "gemini-3.5-flash"
         run: |
           # Audit the PR diff against the spec and coding conventions
-          jules-team review openspec/tasks.md TASK-001 --diff pr_changes.diff
+          TASK_ID=$(echo "${{ github.event.pull_request.title }}" | grep -o 'TASK-[0-9]\+')
+          if [ -z "$TASK_ID" ]; then
+            echo "Warning: No TASK_ID found in PR title. Defaulting to TASK-008."
+            TASK_ID="TASK-008"
+          fi
+          jules-team review openspec/tasks.md $TASK_ID --diff pr_changes.diff
