@@ -1,25 +1,79 @@
 import json
 import asyncio
 import aio_pika
-from typing import Any, Dict
+import logging
+import io
+import boto3
+from typing import Any, Dict, List, Tuple, Optional
 from src.services.matching.engine import MatchingEngine
 from src.services.draft.service import DraftService
 from src.services.notification.service import WeComNotificationService
 from src.db.session import async_session_factory
 from packages.shared.types.quotation import QuotationDraft, ParsedQuotation, MaterialMatch, DraftStatus
-from datetime import datetime
+from src.ai.parser import parse_quotation_request, convert_to_parsed_quotation
+from src.config import settings
+from datetime import datetime, timezone
 import uuid
+
+logger = logging.getLogger(__name__)
 
 class QuotationConsumer:
     def __init__(self, matching_engine: MatchingEngine, notification_service: WeComNotificationService):
         self.matching_engine = matching_engine
         self.notification_service = notification_service
 
+    async def _download_attachments(self, urls: List[str]) -> List[Tuple[bytes, str]]:
+        """Download attachments from S3/MinIO."""
+        attachments = []
+        s3_client = boto3.client(
+            "s3",
+            endpoint_url=settings.s3_endpoint,
+            aws_access_key_id=settings.s3_access_key,
+            aws_secret_access_key=settings.s3_secret_key,
+            region_name=settings.s3_region,
+        )
+
+        for url in urls:
+            if not url.startswith(f"s3://{settings.s3_bucket}/"):
+                continue
+
+            key = url.replace(f"s3://{settings.s3_bucket}/", "")
+            filename = key.split("_", 1)[-1] if "_" in key else key
+
+            try:
+                response = await asyncio.to_thread(
+                    s3_client.get_object,
+                    Bucket=settings.s3_bucket,
+                    Key=key
+                )
+                content = await asyncio.to_thread(response["Body"].read)
+                attachments.append((content, filename))
+            except Exception as e:
+                logger.error(f"Failed to download attachment {url}: {e}")
+                # We continue even if one attachment fails, or should we fail the whole message?
+                # For now, let's continue to allow AI to parse what it has.
+
+        return attachments
+
     async def process_message(self, message_body: bytes) -> None:
         """Process a message from the quotation.parse queue."""
         try:
             data = json.loads(message_body)
-            parsed_quotation = ParsedQuotation(**data)
+
+            # Detect if it's a raw message that needs AI parsing
+            is_raw = "body_text" in data or "chat_text" in data or "attachments" in data
+
+            if is_raw:
+                logger.info("Processing raw message with AI parser")
+                email_content = data.get("body_text") or data.get("chat_text") or ""
+                attachment_urls = data.get("attachments", [])
+
+                attachments = await self._download_attachments(attachment_urls)
+
+                extracted = await parse_quotation_request(email_content, attachments)
+                parsed_quotation = convert_to_parsed_quotation(extracted)
+            else:
+                parsed_quotation = ParsedQuotation(**data)
 
             # 1. Match Customer
             customer_id, customer_score, customer_candidates = self.matching_engine.match_customer(
@@ -54,8 +108,8 @@ class QuotationConsumer:
                 material_matches=material_matches,
                 status=DraftStatus.DRAFT,
                 needs_confirmation=needs_confirmation,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
             )
 
             async with async_session_factory() as session:
@@ -70,11 +124,11 @@ class QuotationConsumer:
             )
 
         except Exception as e:
-            print(f"Error processing message: {e}")
-            # In a real system, we might move this to a dead letter queue
+            logger.error(f"Error processing message: {e}", exc_info=True)
+            # Re-raise to allow MQ retry or dead letter queueing
             raise
 
-async def start_consumer(rabbitmq_url: str, matching_engine: MatchingEngine, notification_service: WeComNotificationService):
+async def start_consumer(rabbitmq_url: str, matching_engine: MatchingEngine, notification_service: WeComNotificationService) -> None:
     """Start the MQ consumer and listen for messages."""
     consumer = QuotationConsumer(matching_engine, notification_service)
 

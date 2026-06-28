@@ -31,11 +31,17 @@ try:
     # We use Any for these because they are dynamically loaded and mypy can't track them well
     QuotationDraft: Any = shared_models.QuotationDraft
     QuotationItem: Any = shared_models.QuotationItem
+    ParsedQuotation: Any = shared_models.ParsedQuotation
+    ParsedMaterial: Any = shared_models.ParsedMaterial
 except (ImportError, AttributeError):
     QuotationDraft = None
     QuotationItem = None
+    ParsedQuotation = None
+    ParsedMaterial = None
 
 logger = logging.getLogger(__name__)
+
+from src.ai.confidence import ConfidenceLevel
 
 async def parse_quotation_request(
     email_content: str,
@@ -75,7 +81,7 @@ async def parse_quotation_request(
 
             data = json.loads(content)
             result = ExtractedQuotation.model_validate(data)
-            return cast(ExtractedQuotation, result)
+            return result
 
         except (ValidationError, json.JSONDecodeError, ValueError) as e:
             logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
@@ -89,29 +95,60 @@ async def parse_quotation_request(
 
     raise ValueError("Failed to parse quotation request after retries")
 
+def convert_to_parsed_quotation(extracted: ExtractedQuotation) -> Any:
+    """
+    Converts ExtractedQuotation to the shared ParsedQuotation model.
+    """
+    if ParsedQuotation is None or ParsedMaterial is None:
+        raise ImportError("Shared quotation models are not available")
+
+    def conf_to_float(level: ConfidenceLevel) -> float:
+        mapping = {
+            ConfidenceLevel.HIGH: 0.95,
+            ConfidenceLevel.MEDIUM: 0.7,
+            ConfidenceLevel.LOW: 0.3
+        }
+        return mapping.get(level, 0.0)
+
+    items = []
+    for item in extracted.items:
+        items.append(ParsedMaterial(
+            code=item.material_code.value,
+            quantity=item.quantity.value,
+            unit=item.unit.value,
+            confidence=conf_to_float(item.material_code.confidence),
+            raw_text=item.material_code.value  # Using code as raw_text for matching
+        ))
+
+    # Calculate overall confidence
+    conf_sum = conf_to_float(extracted.customer_name.confidence)
+    for item in items:
+        conf_sum += item.confidence
+    avg_conf = conf_sum / (1 + len(items)) if (1 + len(items)) > 0 else 0.0
+
+    return ParsedQuotation(
+        customer_name=extracted.customer_name.value,
+        date=extracted.delivery_date.value,
+        items=items,
+        confidence=avg_conf,
+        metadata={
+            "segmentation": extracted.segmentation.value,
+            "remarks": extracted.remarks.value
+        }
+    )
+
 def convert_to_quotation_draft(extracted: ExtractedQuotation, draft_id: str) -> Any:
     """
     Converts ExtractedQuotation to the shared QuotationDraft model.
     Internal IDs (customer_id, material_ids) are not populated here.
     """
-    if QuotationItem is None or QuotationDraft is None:
+    if QuotationDraft is None:
         raise ImportError("Shared quotation models are not available")
 
-    items = []
-    for item in extracted.items:
-        items.append(QuotationItem(
-            material_code=item.material_code.value,
-            quantity=item.quantity.value,
-            target_price=item.target_price.value,
-            unit=item.unit.value,
-            remarks=item.remarks.value
-        ))
+    parsed_data = convert_to_parsed_quotation(extracted)
 
     return QuotationDraft(
         id=draft_id,
-        customer_name=extracted.customer_name.value,
-        segmentation=extracted.segmentation.value,
-        items=items,
-        delivery_date=extracted.delivery_date.value,
-        remarks=extracted.remarks.value
+        parsed_data=parsed_data,
+        status="draft"
     )

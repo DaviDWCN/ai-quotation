@@ -51,7 +51,7 @@ def test_convert_to_quotation_draft(mock_extracted_data):
     draft = convert_to_quotation_draft(extracted, "draft-123")
 
     assert draft.id == "draft-123"
-    assert draft.customer_name == "ABC Corp"
-    assert len(draft.items) == 1
-    assert draft.items[0].material_code == "MOD-123"
-    assert draft.items[0].quantity == 100.0
+    assert draft.parsed_data.customer_name == "ABC Corp"
+    assert len(draft.parsed_data.items) == 1
+    assert draft.parsed_data.items[0].code == "MOD-123"
+    assert draft.parsed_data.items[0].quantity == 100.0
