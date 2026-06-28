@@ -12,3 +12,5 @@ A monorepo for the AI Quotation System.
 2. Run `docker compose up -d` to start infrastructure.
 3. Start backend: `cd packages/api && uvicorn src.main:app --reload`.
 4. Start frontend: `cd packages/web && npm run dev`.
+
+<!-- trigger build -->
