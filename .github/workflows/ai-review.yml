@@ -7,6 +7,9 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
     steps:
       - name: Checkout Target Repo
         uses: actions/checkout@v4
@@ -38,15 +41,30 @@ jobs:
         run: |
           git diff origin/main...HEAD > pr_changes.diff
 
-      - name: Run Review Agent
+      - name: Run Review Agent and Comment Feedback
         env:
           LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta"
           LLM_MODEL: "gemini-3.5-flash"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Dynamically extract TASK_ID from branch name or PR title
-          TASK_ID=$(echo "${{ github.head_ref }}${{ github.event.pull_request.title }}" | grep -oE "TASK-[0-9]+" | head -n 1)
-          if [ -z "$TASK_ID" ]; then TASK_ID="TASK-001"; fi
-          echo "Detected TASK_ID: $TASK_ID"
-          # Audit the PR diff against the spec and coding conventions
-          jules-team review openspec/tasks.md $TASK_ID --diff pr_changes.diff
+          # 1. Extract Task ID from branch name or PR title
+          TASK_ID=$(echo "${{ github.event.pull_request.head.ref }} ${{ github.event.pull_request.title }}" | grep -oE "TASK-[0-9]{3,}" | head -n 1)
+          if [ -z "$TASK_ID" ]; then
+            echo "Error: Could not extract Task ID from branch name '${{ github.event.pull_request.head.ref }}' or PR title '${{ github.event.pull_request.title }}'."
+            exit 1
+          fi
+          echo "Auditing task: $TASK_ID"
+
+          # 2. Audit the PR diff against the spec and coding conventions
+          exit_code=0
+          jules-team review openspec/tasks.md "$TASK_ID" --diff pr_changes.diff > review_report.md || exit_code=$?
+          cat review_report.md
+
+          # 3. Post review comment back to the PR
+          if [ -s review_report.md ]; then
+            gh pr comment "${{ github.event.pull_request.html_url }}" --body-file review_report.md
+          fi
+
+          # 4. Exit with the review's original verdict status (0 = approve, 1 = request changes)
+          exit $exit_code

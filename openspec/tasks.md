@@ -71,7 +71,7 @@ sprint: "2026-W27"
   - spec: specs/TASK-009.md
   - pr: https://github.com/DaviDWCN/ai-quotation/pull/41
 
-- [ ] `TASK-010`: 修复前后端草稿模型不匹配与注册集成网关路由
+- [/] `TASK-010`: 修复前后端草稿模型不匹配与注册集成网关路由
   - assignee: unassigned
   - priority: high
   - depends_on: [TASK-009]
