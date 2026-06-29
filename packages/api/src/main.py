@@ -7,6 +7,7 @@ from src.routers.gateway import router as gateway_router
 
 app = FastAPI(title=settings.app_name)
 
+# Registration of routers
 app.include_router(wecom_callback.router, prefix="/api/wecom", tags=["wecom"])
 app.include_router(drafts_router, prefix="/api")
 app.include_router(gateway_router, prefix="/api/gateway", tags=["gateway"])

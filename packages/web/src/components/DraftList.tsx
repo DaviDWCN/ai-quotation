@@ -33,13 +33,13 @@ export function DraftList({ drafts, mobile }: Props) {
               >
                 <div className={styles.cardHeader}>
                   <span className={styles.id}>#{draft.id.slice(-6)}</span>
-                  <span className={`${styles.status} ${styles[draft.status.toLowerCase()]}`}>
+                  <span className={`${styles.status} ${styles[(draft.status || '').toLowerCase()]}`}>
                     {draft.status}
                   </span>
                 </div>
                 <div className={styles.cardBody}>
                   <p>Created: {new Date(draft.created_at).toLocaleString()}</p>
-                  <p>Fields: {Object.keys(draft.fields).length}</p>
+                  <p>Fields: {Object.keys(draft.fields || {}).length}</p>
                 </div>
               </Link>
             ))}

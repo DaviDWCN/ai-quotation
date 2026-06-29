@@ -17,18 +17,20 @@ class DraftField(BaseModel):
 
 class DraftSummary(BaseModel):
     id: str
-    customer_id: Optional[str]
-    customer_match_score: float
+    customer_id: Optional[str] = None
+    customer_match_score: float = 0.0
     status: str
     needs_confirmation: bool
     fields: Dict[str, DraftField]
+    parsed_data: Dict[str, Any]
+    material_matches: List[Dict[str, Any]]
+    file_url: Optional[str] = None
+    file_type: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
 class DraftDetail(DraftSummary):
     customer_candidates: List[Dict[str, Any]]
-    parsed_data: Dict[str, Any]
-    material_matches: List[Dict[str, Any]]
 
 def map_confidence(score: float) -> Literal["high", "medium", "low"]:
     if score >= 0.9:
@@ -67,6 +69,12 @@ def assemble_fields(draft: Any) -> Dict[str, DraftField]:
             confidence=map_confidence(global_conf),
             required=False,
             label="Segmentation"
+        ),
+        "remarks": DraftField(
+            value=metadata.get("remarks"),
+            confidence=map_confidence(global_conf),
+            required=False,
+            label="Remarks"
         )
     }
 
@@ -86,6 +94,10 @@ async def list_drafts(
             "status": d.status,
             "needs_confirmation": d.needs_confirmation,
             "fields": assemble_fields(d),
+            "parsed_data": d.parsed_data,
+            "material_matches": d.material_matches,
+            "file_url": d.parsed_data.get("metadata", {}).get("file_url"),
+            "file_type": d.parsed_data.get("metadata", {}).get("file_type"),
             "created_at": d.created_at,
             "updated_at": d.updated_at
         } for d in drafts
@@ -105,11 +117,13 @@ async def get_draft(draft_id: str, session: AsyncSession = Depends(get_session))
         "status": draft.status,
         "needs_confirmation": draft.needs_confirmation,
         "fields": assemble_fields(draft),
+        "parsed_data": draft.parsed_data,
+        "material_matches": draft.material_matches,
+        "file_url": draft.parsed_data.get("metadata", {}).get("file_url"),
+        "file_type": draft.parsed_data.get("metadata", {}).get("file_type"),
         "created_at": draft.created_at,
         "updated_at": draft.updated_at,
         "customer_candidates": draft.customer_candidates,
-        "parsed_data": draft.parsed_data,
-        "material_matches": draft.material_matches,
     }
     return res
 
@@ -148,10 +162,12 @@ async def update_draft(
         "status": updated.status,
         "needs_confirmation": updated.needs_confirmation,
         "fields": assemble_fields(updated),
+        "parsed_data": updated.parsed_data,
+        "material_matches": updated.material_matches,
+        "file_url": updated.parsed_data.get("metadata", {}).get("file_url"),
+        "file_type": updated.parsed_data.get("metadata", {}).get("file_type"),
         "created_at": updated.created_at,
         "updated_at": updated.updated_at,
         "customer_candidates": updated.customer_candidates,
-        "parsed_data": updated.parsed_data,
-        "material_matches": updated.material_matches,
     }
     return res

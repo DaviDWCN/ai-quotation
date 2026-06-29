@@ -1,4 +1,4 @@
-import { Draft, DraftField } from '@/lib/api';
+import { Draft } from '@/lib/api';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { MissingFieldAlert } from './MissingFieldAlert';
 import styles from './DraftForm.module.css';
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function DraftForm({ draft, onUpdateField, onSave, saving }: Props) {
-  const missingFields = Object.entries(draft.fields)
+  const missingFields = Object.entries(draft.fields || {})
     .filter(([_, f]) => f.required && !f.value)
     .map(([_, f]) => f.label);
 
@@ -21,7 +21,7 @@ export function DraftForm({ draft, onUpdateField, onSave, saving }: Props) {
     <div className={styles.form}>
       <MissingFieldAlert fields={missingFields} />
 
-      {Object.entries(draft.fields).map(([key, field]) => (
+      {Object.entries(draft.fields || {}).map(([key, field]) => (
         <div key={key} className={`${styles.field} ${field.required && !field.value ? styles.error : ''}`}>
           <label className={styles.label}>
             {field.label}
