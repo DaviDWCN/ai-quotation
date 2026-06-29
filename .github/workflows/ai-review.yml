@@ -41,6 +41,54 @@ jobs:
         run: |
           git diff origin/main...HEAD > pr_changes.diff
 
+      - name: Extract Task ID
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node -e "
+            const prNumber = '${{ github.event.pull_request.number }}';
+            const repo = '${{ github.repository }}';
+            const token = process.env.GH_TOKEN;
+            
+            async function getTaskId() {
+              try {
+                // 1. Try branch name or PR title first
+                const branchAndTitle = '${{ github.event.pull_request.head.ref }} ${{ github.event.pull_request.title }}';
+                const match = branchAndTitle.match(/TASK-[0-9]{3,}/i);
+                if (match) {
+                  console.log(match[0].toUpperCase());
+                  return;
+                }
+
+                // 2. Fetch timeline to find linked issue
+                const headers = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                
+                const res = await fetch('https://api.github.com/repos/' + repo + '/issues/' + prNumber + '/timeline', { headers });
+                if (res.ok) {
+                  const events = await res.json();
+                  for (const event of events) {
+                    if (event.event === 'cross-referenced' && event.source?.issue) {
+                      const titleMatch = event.source.issue.title.match(/TASK-[0-9]{3,}/i);
+                      if (titleMatch) {
+                        console.log(titleMatch[0].toUpperCase());
+                        return;
+                      }
+                    }
+                  }
+                }
+              } catch (e) {
+                console.error(e);
+              }
+              // If not found, exit with error
+              process.exit(1);
+            }
+            getTaskId();
+          " > task_id.txt
+          TASK_ID=$(cat task_id.txt)
+          echo "TASK_ID=$TASK_ID" >> $GITHUB_ENV
+          echo "Extracted Task ID: $TASK_ID"
+
       - name: Run Review Agent and Comment Feedback
         env:
           LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -48,32 +96,17 @@ jobs:
           LLM_MODEL: "gemini-3.5-flash"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. Extract Task ID from tasks.md mapping or branch name / PR title
-          PR_URL="${{ github.event.pull_request.html_url }}"
-          LINE_NUM=$(grep -n "$PR_URL" openspec/tasks.md | cut -d: -f1 | head -n 1)
-          if [ -n "$LINE_NUM" ]; then
-            TASK_ID=$(head -n "$LINE_NUM" openspec/tasks.md | grep -oE "TASK-[0-9]{3,}" | tail -n 1)
-          fi
-
-          if [ -z "$TASK_ID" ]; then
-            TASK_ID=$(echo "${{ github.event.pull_request.head.ref }} ${{ github.event.pull_request.title }}" | grep -oE "TASK-[0-9]{3,}" | head -n 1)
-          fi
-
-          if [ -z "$TASK_ID" ]; then
-            echo "Error: Could not determine Task ID from openspec/tasks.md mapping, branch name '${{ github.event.pull_request.head.ref }}', or PR title '${{ github.event.pull_request.title }}'."
-            exit 1
-          fi
           echo "Auditing task: $TASK_ID"
 
-          # 2. Audit the PR diff against the spec and coding conventions
+          # 1. Audit the PR diff against the spec and coding conventions
           exit_code=0
           jules-team review openspec/tasks.md "$TASK_ID" --diff pr_changes.diff > review_report.md 2>&1 || exit_code=$?
           cat review_report.md
 
-          # 3. Post review comment back to the PR
+          # 2. Post review comment back to the PR
           if [ -s review_report.md ]; then
             gh pr comment "${{ github.event.pull_request.html_url }}" --body-file review_report.md
           fi
 
-          # 4. Exit with the review's original verdict status (0 = approve, 1 = request changes)
+          # 3. Exit with the review's original verdict status (0 = approve, 1 = request changes)
           exit $exit_code
