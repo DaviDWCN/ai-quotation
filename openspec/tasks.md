@@ -76,6 +76,7 @@ sprint: "2026-W27"
   - priority: high
   - depends_on: [TASK-009]
   - spec: specs/TASK-010.md
+  - pr: https://github.com/DaviDWCN/ai-quotation/pull/51
 
 ## In Progress
 
