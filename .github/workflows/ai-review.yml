@@ -44,7 +44,7 @@ jobs:
       - name: Run Review Agent and Comment Feedback
         env:
           LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta"
+          LLM_API_ENDPOINT: "https://generativelanguage.googleapis.com/v1beta/openai"
           LLM_MODEL: "gemini-3.5-flash"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -67,7 +67,7 @@ jobs:
 
           # 2. Audit the PR diff against the spec and coding conventions
           exit_code=0
-          jules-team review openspec/tasks.md "$TASK_ID" --diff pr_changes.diff > review_report.md || exit_code=$?
+          jules-team review openspec/tasks.md "$TASK_ID" --diff pr_changes.diff > review_report.md 2>&1 || exit_code=$?
           cat review_report.md
 
           # 3. Post review comment back to the PR
