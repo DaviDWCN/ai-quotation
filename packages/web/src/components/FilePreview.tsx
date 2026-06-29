@@ -1,8 +1,8 @@
 import styles from './FilePreview.module.css';
 
 interface Props {
-  url: string;
-  type: string;
+  url?: string;
+  type?: string;
 }
 
 export function FilePreview({ url, type }: Props) {

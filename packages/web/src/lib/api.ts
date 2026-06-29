@@ -7,12 +7,19 @@ export interface DraftField {
   label: string;
 }
 
+export type DraftStatus = 'draft' | 'confirmed' | 'submitted' | 'completed' | 'APPROVED';
+
 export interface Draft {
   id: string;
-  status: string;
+  customer_id?: string;
+  customer_match_score: number;
+  status: DraftStatus;
+  needs_confirmation: boolean;
   fields: Record<string, DraftField>;
-  file_url: string;
-  file_type: string;
+  parsed_data: any;
+  material_matches: any[];
+  file_url?: string;
+  file_type?: string;
   created_at: string;
   updated_at: string;
 }
