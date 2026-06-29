@@ -48,10 +48,19 @@ jobs:
           LLM_MODEL: "gemini-3.5-flash"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. Extract Task ID from branch name or PR title
-          TASK_ID=$(echo "${{ github.event.pull_request.head.ref }} ${{ github.event.pull_request.title }}" | grep -oE "TASK-[0-9]{3,}" | head -n 1)
+          # 1. Extract Task ID from tasks.md mapping or branch name / PR title
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          LINE_NUM=$(grep -n "$PR_URL" openspec/tasks.md | cut -d: -f1 | head -n 1)
+          if [ -n "$LINE_NUM" ]; then
+            TASK_ID=$(head -n "$LINE_NUM" openspec/tasks.md | grep -oE "TASK-[0-9]{3,}" | tail -n 1)
+          fi
+
           if [ -z "$TASK_ID" ]; then
-            echo "Error: Could not extract Task ID from branch name '${{ github.event.pull_request.head.ref }}' or PR title '${{ github.event.pull_request.title }}'."
+            TASK_ID=$(echo "${{ github.event.pull_request.head.ref }} ${{ github.event.pull_request.title }}" | grep -oE "TASK-[0-9]{3,}" | head -n 1)
+          fi
+
+          if [ -z "$TASK_ID" ]; then
+            echo "Error: Could not determine Task ID from openspec/tasks.md mapping, branch name '${{ github.event.pull_request.head.ref }}', or PR title '${{ github.event.pull_request.title }}'."
             exit 1
           fi
           echo "Auditing task: $TASK_ID"
